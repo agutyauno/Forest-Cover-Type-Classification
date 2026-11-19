@@ -1,0 +1,6 @@
+# Chuẩn hoá xuống dòng cho file văn bản; giữ nguyên file nhị phân
+* text=auto
+*.png binary
+*.joblib binary
+*.npz binary
+*.gz binary

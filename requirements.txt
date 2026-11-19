@@ -1,0 +1,11 @@
+# Phiên bản đã dùng để chạy notebook và tạo các số đo trong results/ (Python 3.13.5, Windows 10).
+# Các phiên bản khác có thể cho kết quả lệch nhẹ (ví dụ do thay đổi thuật toán trong scikit-learn).
+numpy==2.5.4
+pandas==3.1.1
+scikit-learn==1.9.1
+scipy==1.18.1
+matplotlib==3.11.2
+seaborn==0.13.2
+joblib==1.6.0
+psutil==7.2.2
+ipykernel

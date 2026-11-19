@@ -1,0 +1,28 @@
+# --- Dữ liệu thô (72 MB; tải lại được, xem data/README.md) ---
+data/raw/covtype.data
+data/raw/covtype.data.gz
+
+# --- Mô hình và chỉ số phân chia (tái tạo bằng cách chạy notebook) ---
+models/*.joblib
+models/*.npz
+
+# --- Bản sao lưu cục bộ trước khi có git ---
+backup/
+
+# --- Python / Jupyter ---
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# --- Hệ điều hành / IDE ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# --- Thiết lập cục bộ của Claude Code ---
+.claude/settings.local.json
