@@ -1,6 +1,6 @@
 # NHẬT KÝ CHỈNH SỬA SAU RÀ SOÁT
 
-Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo; đợt 3 (mục 1c) tái cấu trúc notebook. Số liệu ghi trong mục 1b thuộc bản notebook trước đợt 3. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
+Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo; đợt 3 (mục 1c) tái cấu trúc notebook; đợt 4 (mục 1d) chạy lại từng bước và bỏ cột `Wilderness_Area`. Số liệu ghi trong mục 1b thuộc bản notebook trước đợt 3; số liệu ở mục 1c thuộc bản trước đợt 4. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
 
 ## 1. Đã sửa
 
@@ -42,10 +42,22 @@ Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đ�
 | 24 | Đổi tên đầu ra: `rf_final_config.json`, `splits.npz`, `e0_e3_explore.csv`, `e5_tuning.csv`, `feature_importance.csv`, `eval_confusion_final.png`; gỡ các file đầu ra cũ không còn được tạo (vẫn còn trong lịch sử git) | Tên file khớp với cấu trúc mới | `models/`, `results/` |
 | 25 | Sửa lỗi `permutation_importance(n_jobs=-1)` thất bại do phải pickle rừng lớn sang tiến trình con; chuyển sang `n_jobs=1` | Lỗi chỉ xuất hiện ở quy mô dữ liệu đầy đủ | notebook, Bước 10.2 |
 
+## 1d. Đợt 4 — Chạy lại từng bước, bỏ cột Wilderness_Area
+
+| # | Thay đổi | Lý do | File |
+| :-: | :--- | :--- | :--- |
+| 26 | Báo cáo Precision / Recall / F1 của cả 7 lớp ở mọi thí nghiệm (`eval_preds`, `per_class_table`), D_final kèm KTC bootstrap từng lớp (`results/tables/final_per_class.csv`), E6 kèm F1 từng lớp theo vùng | Các bảng trước chỉ báo cáo lớp 4 và chỉ số tổng hợp | notebook Bước 1, 6–11 |
+| 27 | E2 thêm các phương án về hướng sườn / bóng nắng (bỏ `Aspect_Trig`, `Delta_Hillshade`; chỉ giữ dạng dẫn xuất; bỏ hẳn; giữ `Hillshade_Noon`); `build_features()` thêm tham số `drop_raw`. Quy tắc chọn "tổ hợp KC, chỉ dẫn xuất" | Kiểm tra dư thừa giữa cột gốc và cột dẫn xuất (mục 2.5 cũ) | notebook Bước 5–6 |
+| 28 | Thêm mục 11.1 (ablation 2×2: `Wilderness_Area` × 6 tổ hợp khoảng cách, chia ngẫu nhiên và LOWO) và 11.2 (cơ cấu lớp theo vùng, ma trận nhầm lẫn LOWO, phân vị cao độ theo vùng × lớp) | Kiểm chứng giả thuyết ở mục 2.3 cũ về đặc trưng gắn vị trí | notebook Bước 11 |
+| 29 | **Từ E2 trở đi bỏ 4 cột `Wilderness_Area`** (E0/E1 giữ 54 cột gốc làm baseline); chạy lại E2–E6. Mô hình cuối: 57 đặc trưng, `max_features=0.35`, 200 cây. D_final Macro-F1 0,9523 [0,9491–0,9558] (không khác bản cũ trong KTC); E6 0,374 (bản cũ 0,277; E0 0,323) | Cột WA không đổi hiệu năng khi chia ngẫu nhiên (0,9527 so với 0,9526 ± 0,0008) nhưng giảm LOWO ≈ 0,10, nhất quán ở cả hai chiều thử; luật không còn điều kiện kiểu "nếu thuộc vùng X" | notebook, `models/`, `results/`, `README.md`, `docs/` |
+| 30 | Bỏ các tham số quyết định thủ công: mục 8.1 (`PRIORITY`, ưu tiên Precision/Recall lớp hiếm) và `N_TREES_OVERRIDE` ở Bước 9; cấu hình và số cây hoàn toàn theo quy tắc `choose_simplest` | Ở cả hai lần chạy, chênh lệch Precision lớp hiếm giữa các ứng viên chỉ 0,0001, nhỏ hơn nhiều so với dao động giữa các seed | notebook Bước 8–9 |
+| 31 | Bước 12 viết lại theo số đo mới. D_final đã được dùng 3 lần (commit `3603bec`, lần chạy từng bước trước khi bỏ WA, lần này); mọi lựa chọn dựa trên D_val hoặc LOWO | Minh bạch việc dùng lại tập đánh giá cuối | notebook Bước 12 |
+
 ## 2. Cần người thực hiện xử lý (tiếp theo)
 
 1. ~~Đối chiếu bộ `docs/` với `detai.md`~~ — `detai.md` đã có trong `docs/`. Yêu cầu "thực hiện trên Google Colab" **chưa được kiểm tra**: notebook mới chạy trên máy cục bộ.
 2. Các mục **[KỲ VỌNG]/[CẦN ĐO]** liên quan tới Bước 1–5B đã có số đo kèm theo. Còn lại: thời gian/RAM trên Colab; mọi số liệu của Bước 6–8 (Fidelity, luật, hàm tương tác). Hàm trích luật mới chỉ chạy trên dữ liệu giả lập, chưa chạy trên Covertype.
-3. **[GIẢ THUYẾT]** cần kiểm chứng trước hoặc cùng Bước 6: loại các đặc trưng gắn với vị trí (Roadways, Fire_Points, tổ hợp của chúng, Wilderness) có thể cải thiện kết quả E6. Số đo hiện có ủng hộ hướng kiểm tra này: mô hình cuối kém baseline E0 ở vùng chưa thấy, chủ yếu ở WA4, và `Fire_Road_Sum` đứng thứ 3 về Permutation importance.
-4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu với số đo: (a) giả thuyết pha loãng One-Hot **không** được ủng hộ (E3: One-Hot cao hơn các phương án gộp); (b) `class_weight='balanced'` tốt nhất trên S15 (E1) nhưng `None` tốt hơn ở quy mô đầy đủ (E5); (c) `balanced_subsample, min_samples_leaf=2` có Recall lớp 4 cao hơn cấu hình cuối, đổi lại F1 thấp hơn 0,004.
-5. E2 chỉ bỏ từng nhóm đặc trưng khi chưa có tổ hợp khoảng cách; phương án "tổ hợp khoảng cách + bỏ `Aspect_Trig`/`Delta_Hillshade`" chưa được thử.
+3. ~~Kiểm chứng việc loại đặc trưng gắn vị trí dưới giao thức E6~~ — đã làm ở đợt 4 (mục 1d, #28–29): bỏ `Wilderness_Area` đã áp dụng. Còn để ngỏ: bỏ 6 tổ hợp khoảng cách là một đánh đổi (−0,011 Macro-F1 khi chia ngẫu nhiên, +0,018 ở vùng chưa thấy); `Fire_Road_Sum` vẫn đứng thứ 3 về Permutation importance nên có thể xuất hiện trong luật của cây đại diện.
+4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu với số đo: (a) giả thuyết pha loãng One-Hot **không** được ủng hộ (E3: One-Hot cao hơn các phương án gộp); (b) `class_weight='balanced'` tốt nhất trên S15 (E1) nhưng `None` tốt hơn ở quy mô đầy đủ (E5); (c) `class_weight` và `min_samples_leaf` chủ yếu đổi Precision lấy Recall của các lớp hiếm (ví dụ `balanced, min_samples_leaf=4`: Recall lớp 4 0,929 so với 0,884, Macro-F1 −0,024; 1 seed, xem `results/tables/e5_tuning.csv`); (d) `max_depth=20` dự đoán thừa lớp 5 (Recall 0,970, Precision 0,628).
+5. ~~Phương án "tổ hợp khoảng cách + bỏ `Aspect_Trig`/`Delta_Hillshade`"~~ — đã thử ở đợt 4 (#27).
+6. Số cây (200) do quy tắc chọn dựa trên chênh lệch cỡ nhiễu so với 150 cây (đường cong 1 seed); nếu kích thước file hoặc tốc độ truy vấn ở E7 là vấn đề, có thể cân nhắc lại.

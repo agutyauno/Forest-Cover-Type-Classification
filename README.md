@@ -59,23 +59,24 @@ jupyter notebook notebooks/Phan_loai_tham_rung.ipynb   # rồi chọn "Run All"
 
 ## 📊 Kết quả chính (số đo thực nghiệm, chi tiết ở notebook Bước 12)
 
-Mô hình cuối: Random Forest 150 cây, 65 đặc trưng (54 cột gốc + 5 đặc trưng sinh thái + 6 tổ hợp khoảng cách), `criterion='entropy'`, `max_features=0.5`, `max_depth=None`, học trên 348.608 mẫu.
+Mô hình cuối: Random Forest 200 cây, 57 đặc trưng (46 cột gốc, sau khi bỏ `Aspect`, 3 cột `Hillshade` và 4 cột `Wilderness_Area`; 5 đặc trưng sinh thái dẫn xuất; 6 tổ hợp khoảng cách), `criterion='entropy'`, `max_features=0.35`, `max_depth=None`, `class_weight=None`, học trên 348.608 mẫu. Siêu tham số và số cây đều do quy tắc chọn tự động (trong ngưỡng 1 SD, chọn phương án đơn giản hơn).
 
 | Đánh giá | Số đo [KTC 95%] |
 | :--- | :---: |
-| Accuracy trên D_final (chia ngẫu nhiên, n = 116.202) | 0,9742 [0,9733–0,9751] |
-| Macro-F1 trên D_final | 0,9510 [0,9476–0,9545] |
-| Recall lớp 4 trên D_final (n = 549) | 0,874 [0,844–0,900] |
-| Macro-F1 trên vùng chưa thấy (E6, TB 4 vùng, lớp đã thấy) — mô hình cuối | 0,277 |
+| Accuracy trên D_final (chia ngẫu nhiên, n = 116.202) | 0,9747 [0,9739–0,9756] |
+| Macro-F1 trên D_final | 0,9523 [0,9491–0,9558] |
+| Recall lớp 4 trên D_final (n = 549) | 0,883 [0,854–0,908] |
+| Macro-F1 trên vùng chưa thấy (E6, TB 4 vùng, lớp đã thấy) — mô hình cuối | 0,374 |
+| Như trên — mô hình cuối nhưng giữ 4 cột `Wilderness_Area` | 0,277 |
 | Như trên — baseline E0 (54 cột gốc, tham số mặc định) | 0,323 |
 
-**Hạn chế chính**: khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện (E6), hiệu năng giảm mạnh. Mô hình cuối còn thấp hơn baseline E0, chủ yếu do kết quả ở vùng WA4. Các chỉ số trên D_final chỉ phản ánh năng lực dự đoán **bên trong 4 vùng nghiên cứu**.
+**Hạn chế chính**: khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện (E6), hiệu năng giảm mạnh (0,969 → 0,374). Bỏ 4 cột `Wilderness_Area` gỡ được một phần (từ 0,277 lên 0,374) mà không làm đổi hiệu năng khi chia ngẫu nhiên; phần còn lại phù hợp với việc đai cao độ của cùng một kiểu rừng dịch chuyển giữa các vùng (notebook mục 11.2). Các chỉ số trên D_final chỉ phản ánh năng lực dự đoán **bên trong 4 vùng nghiên cứu**.
 
 ---
 
 ## 🚀 Trạng thái triển khai
 - [x] Tài liệu đặc tả, cơ sở lý thuyết và dẫn chứng khoa học trong `docs/`.
-- [x] Notebook một quy trình (Bước 1–12): nạp dữ liệu, EDA, phân chia D_final / D_val / D_pool, mẫu khảo sát S15, E0–E3 (trọng số lớp, đặc trưng sinh thái, thổ nhưỡng), E4 (quy mô dữ liệu), E5 (siêu tham số), mô hình cuối, đánh giá một lần trên D_final, E6 (leave-one-wilderness-out).
-- [ ] Ablation loại đặc trưng gắn với vị trí (Roadways, Fire_Points, tổ hợp của chúng, Wilderness) dưới giao thức E6 — **[GIẢ THUYẾT]** có thể cải thiện khả năng chuyển vùng.
+- [x] Notebook một quy trình (Bước 1–12): nạp dữ liệu, EDA, phân chia D_final / D_val / D_pool, mẫu khảo sát S15, E0–E3 (trọng số lớp, đặc trưng sinh thái, thổ nhưỡng), E4 (quy mô dữ liệu), E5 (siêu tham số), mô hình cuối, đánh giá một lần trên D_final, E6 (leave-one-wilderness-out), ablation đặc trưng gắn vị trí (mục 11.1) và chẩn đoán nguyên nhân suy giảm khi chuyển vùng (mục 11.2).
+- [x] Ablation đặc trưng gắn vị trí dưới giao thức E6: bỏ `Wilderness_Area` (đã áp dụng). Bỏ 6 tổ hợp khoảng cách: đánh đổi (−0,011 khi chia ngẫu nhiên, +0,018 ở vùng chưa thấy), chưa áp dụng.
 - [ ] Trích xuất luật sinh thái (E7), hàm tương tác thực địa, báo cáo tổng kết.
 - [ ] Kiểm tra chạy toàn bộ notebook trên Google Colab.

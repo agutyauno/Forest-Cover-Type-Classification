@@ -7,23 +7,25 @@
       "Delta_Hillshade"
     ],
     "dist_combo": true,
+    "drop_raw": [
+      "Aspect",
+      "Hillshade_9am",
+      "Hillshade_Noon",
+      "Hillshade_3pm",
+      "Wilderness_Area_1",
+      "Wilderness_Area_2",
+      "Wilderness_Area_3",
+      "Wilderness_Area_4"
+    ],
     "soil": "onehot"
   },
   "features": [
     "Elevation",
-    "Aspect",
     "Slope",
     "Horizontal_Distance_To_Hydrology",
     "Vertical_Distance_To_Hydrology",
     "Horizontal_Distance_To_Roadways",
-    "Hillshade_9am",
-    "Hillshade_Noon",
-    "Hillshade_3pm",
     "Horizontal_Distance_To_Fire_Points",
-    "Wilderness_Area_1",
-    "Wilderness_Area_2",
-    "Wilderness_Area_3",
-    "Wilderness_Area_4",
     "Soil_Type_1",
     "Soil_Type_2",
     "Soil_Type_3",
@@ -78,11 +80,11 @@
   ],
   "rf_params": {
     "max_depth": null,
-    "max_features": 0.5,
+    "max_features": 0.35,
     "criterion": "entropy",
     "min_samples_leaf": 1,
     "class_weight": null,
-    "n_estimators": 150,
+    "n_estimators": 200,
     "random_state": 42
   },
   "train_fraction_of_pool": 1.0,

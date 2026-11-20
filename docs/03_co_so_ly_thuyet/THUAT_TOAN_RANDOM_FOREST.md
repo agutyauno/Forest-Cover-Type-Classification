@@ -155,11 +155,11 @@ Khi sử dụng `sklearn.ensemble.RandomForestClassifier`, các tham số quan t
 | Tham số | Ý nghĩa kỹ thuật | Ảnh hưởng / Khuyến nghị |
 | :--- | :--- | :--- |
 | `n_estimators` | Số lượng cây trong rừng (mặc định = 100). | Tăng số cây giúp mô hình ổn định hơn, giảm phương sai sai số. Khuyến nghị: `100 - 150` cây để cân bằng giữa độ chính xác và thời gian chạy Colab. **[SỐ ĐO]** (Bước 9): Macro-F1 trên D_val tăng 0,0010 từ 150 lên 300 cây (nhỏ hơn 1 SD giữa các seed); chọn 150. |
-| `criterion` | Hàm đo lường chất lượng phân nhánh: `'gini'` hoặc `'entropy'`. | `'gini'` tính toán nhanh hơn và thường cho kết quả tương đương. **[SỐ ĐO]** (E5): trên dữ liệu này `'entropy'` cho Macro-F1 cao hơn `'gini'` ở cả 4 mức `max_features` thử nghiệm (+0,002 đến +0,005), thời gian huấn luyện tương đương. |
-| `max_depth` | Độ sâu tối đa của mỗi cây quyết định. | Khống chế độ sâu (`max_depth = 15 - 25`) giúp hạn chế overfitting và giảm dung lượng bộ nhớ. **[SỐ ĐO]** (E4): ở mọi quy mô thử nghiệm, `max_depth=None` cho Macro-F1 cao hơn `max_depth=20` (0,940 so với 0,899 ở 348.608 mẫu, chia ngẫu nhiên). Ngược lại, `max_depth=20` cho Recall lớp 4 và lớp 5 cao hơn, đổi lại Precision thấp hơn. |
+| `criterion` | Hàm đo lường chất lượng phân nhánh: `'gini'` hoặc `'entropy'`. | `'gini'` tính toán nhanh hơn và thường cho kết quả tương đương. **[SỐ ĐO]** (E5): trên dữ liệu này `'entropy'` cho Macro-F1 cao hơn `'gini'` ở cả 4 mức `max_features` thử nghiệm (+0,001 đến +0,005), thời gian huấn luyện tương đương. |
+| `max_depth` | Độ sâu tối đa của mỗi cây quyết định. | Khống chế độ sâu (`max_depth = 15 - 25`) giúp hạn chế overfitting và giảm dung lượng bộ nhớ. **[SỐ ĐO]** (E4): ở mọi quy mô thử nghiệm, `max_depth=None` cho Macro-F1 cao hơn `max_depth=20` (0,943 so với 0,900 ở 348.608 mẫu, chia ngẫu nhiên). Ngược lại, `max_depth=20` cho Recall lớp 4 và lớp 5 cao hơn, đổi lại Precision thấp hơn (lớp 5: Recall 0,970, Precision 0,628). |
 | `min_samples_split` | Số lượng mẫu tối thiểu tại một nút để cho phép chia nhánh tiếp (mặc định = 2). | Tăng giá trị này (ví dụ lên 5 hoặc 10) giúp cây khái quát hóa tốt hơn, tránh tạo ra các nút quá nhỏ chứa nhiễu. |
 | `min_samples_leaf` | Số lượng mẫu tối thiểu bắt buộc phải có tại một nút lá (mặc định = 1). | Đặt giá trị 2 hoặc 4 giúp làm mượt biên quyết định, giảm thiểu ảnh hưởng của các điểm ngoại lai. |
-| `max_features` | Số lượng đặc trưng ngẫu nhiên xem xét tại mỗi nút phân nhánh. | `'sqrt'` (mặc định: $m = \lfloor\sqrt{p}\rfloor$) là mặc định phổ biến cho phân loại; có thể tinh chỉnh. **[SỐ ĐO]** (E5, 65 cột): `0.35` và `0.5` cho Macro-F1 ngang nhau và cao nhất trong lưới {sqrt, 0.35, 0.5, 0.7}; mô hình cuối dùng `0.5`. |
+| `max_features` | Số lượng đặc trưng ngẫu nhiên xem xét tại mỗi nút phân nhánh. | `'sqrt'` (mặc định: $m = \lfloor\sqrt{p}\rfloor$) là mặc định phổ biến cho phân loại; có thể tinh chỉnh. **[SỐ ĐO]** (E5, 57 cột): `0.35` + entropy cho Macro-F1 cao nhất trong lưới {sqrt, 0.35, 0.5, 0.7}; mô hình cuối dùng `0.35`. |
 | `class_weight` | Cơ chế điều chỉnh trọng số các lớp. | Khởi điểm `'balanced'` để tăng trọng số lớp hiếm; so sánh với `None` và `'balanced_subsample'` bằng ablation. **[SỐ ĐO]**: `'balanced'` cho F1 cao nhất trên mẫu 87K (E1), nhưng `None` cao hơn khi huấn luyện trên 348K mẫu (E5); lựa chọn phụ thuộc quy mô dữ liệu. |
 | `n_jobs` | Số lõi CPU sử dụng song song để huấn luyện. | Đặt `-1` để khai thác tối đa tất cả các nhân CPU có sẵn trên môi trường Google Colab. |
 | `random_state` | Hạt giống sinh số ngẫu nhiên. | Đặt một số nguyên cố định (ví dụ: `42`) để kết quả có tính tái lập (reproducible). |
@@ -176,7 +176,7 @@ Khi sử dụng `sklearn.ensemble.RandomForestClassifier`, các tham số quan t
 5. **Cung cấp chỉ số diễn giải**: Cho phép xuất bảng Feature Importance (nên đối chiếu thêm Permutation Importance, xem mục 4.2).
 
 ### 6.2. Hạn chế và Cách khắc phục trong đề tài
-1. **Tính chất "Hộp đen" tương đối (Black-box)**: Khó có thể vẽ toàn bộ 150 cây lên một trang giấy để xem xét từng nhánh.
+1. **Tính chất "Hộp đen" tương đối (Black-box)**: Khó có thể vẽ toàn bộ 200 cây lên một trang giấy để xem xét từng nhánh.
    - *Khắc phục trong đề tài*: Huấn luyện một Cây quyết định nông làm mô hình đại diện (surrogate) **trên dự đoán của Random Forest** để trích xuất quy tắc If-Then, và báo cáo Fidelity so với RF (xem `PHUONG_PHAP_TRICH_XUAT_LUAT.md`). Luật chỉ là xấp xỉ của RF.
 2. **Tốn bộ nhớ RAM hơn cây đơn lẻ**: Lưu trữ hàng trăm cây yêu cầu dung lượng bộ nhớ lớn hơn.
    - *Khắc phục trong đề tài*: Dùng lấy mẫu phân tầng 15% (~87.000 dòng) cho pha thử nghiệm và giới hạn `max_depth`; mức RAM/thời gian thực tế **[CẦN ĐO]**, và kích thước mẫu cuối chọn bằng learning curve.

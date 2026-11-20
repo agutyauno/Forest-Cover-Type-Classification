@@ -38,7 +38,7 @@ Trả lời bằng số đo các câu hỏi mà tài liệu thiết kế mới c
 Accuracy; Macro-F1; Precision/Recall/F1 từng lớp (đặc biệt lớp 4); ma trận nhầm lẫn; thời gian huấn luyện; RAM đỉnh; kích thước mô hình.
 
 ### 2.4. Khoảng tin cậy cho lớp hiếm
-Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80 có khoảng tin cậy 95% khoảng ±9 điểm phần trăm. Với ≈ 549 mẫu (D_val, D_final), khoảng này thu hẹp còn khoảng ±3 điểm (số đo trên D_final: 0,874 [0,844–0,900]). Luôn báo cáo khoảng tin cậy Wilson hoặc bootstrap kèm Recall lớp 4.
+Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80 có khoảng tin cậy 95% khoảng ±9 điểm phần trăm. Với ≈ 549 mẫu (D_val, D_final), khoảng này thu hẹp còn khoảng ±3 điểm (số đo trên D_final: 0,883 [0,854–0,908]). Luôn báo cáo khoảng tin cậy Wilson hoặc bootstrap kèm Recall lớp 4.
 
 ---
 
@@ -52,7 +52,7 @@ Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80
 | **E3** | Biểu diễn đất nào tốt hơn? | (A) One-Hot, (B) `Soil_Type_Code`, (C) Climatic + Geologic Zone, (D) Code + Zones | Cấu hình tốt nhất của E1–E2 | Kiểm chứng giả thuyết "pha loãng" |
 | **E4** | Mẫu 15% mất bao nhiêu hiệu năng? | Kích thước train: 5% / 10% / 15% / 30% / 50% / 100% của pool huấn luyện | **Test cố định chung**: 20% toàn bộ dữ liệu, `stratify=y` (≈ 116.200; lớp 4 ≈ 549) | Learning curve; kèm thời gian và RAM từng mức |
 | **E5** | Siêu tham số nào hợp lý? | `max_depth` ∈ {10, 15, 20, None}; `n_estimators` ∈ {100, 150, 300}; `max_features`; `min_samples_leaf` | Cấu hình tốt nhất của E1–E3 | Chỉ CV trên Train |
-| **E6** | Mô hình có tổng quát hoá sang vùng khác không? | Leave-one-wilderness-out (huấn luyện 3 vùng `Wilderness_Area`, kiểm thử vùng còn lại) | Cấu hình đã chốt | Dữ liệu UCI **không có tọa độ**, đây chỉ là phép kiểm tra thay thế cho tự tương quan không gian `[16]`. Một số lớp có thể vắng ở một số vùng: kiểm tra trước và chỉ tính thước đo trên lớp có mặt |
+| **E6** | Mô hình có tổng quát hoá sang vùng khác không? | Leave-one-wilderness-out (huấn luyện 3 vùng `Wilderness_Area`, kiểm thử vùng còn lại) | Cấu hình đã chốt | Dữ liệu UCI **không có tọa độ**, đây chỉ là phép kiểm tra thay thế cho tự tương quan không gian `[16]`. Một số lớp có thể vắng ở một số vùng: kiểm tra trước và chỉ tính thước đo trên lớp có mặt. **[SỐ ĐO]** bổ sung (notebook mục 11.1): ablation 2×2 cột `Wilderness_Area` × 6 tổ hợp khoảng cách dưới cùng giao thức; mục 11.2: ma trận nhầm lẫn theo vùng và phân vị cao độ theo vùng × lớp |
 | **E7** | Cây đại diện xấp xỉ RF tốt đến đâu? | Nhãn huấn luyện (RF vs nhãn thật); `max_depth` 3–6; `min_samples_leaf` 50–500 | RF đã chốt | Đo Fidelity, accuracy, số lớp có luật, độ dài luật |
 
 ---

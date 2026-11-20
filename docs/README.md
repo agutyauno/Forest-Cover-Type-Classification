@@ -39,7 +39,7 @@ docs/
 - **Bối cảnh & Ý nghĩa thực tiễn**: Ứng dụng AI/ML trong điều tra thảm thực vật rừng, phòng chống cháy rừng và bảo tồn đa dạng sinh học tại dãy núi Rocky (Colorado, Hoa Kỳ).
 - **Đặc tả dữ liệu**: Bộ dữ liệu UCI 31 (581.012 dòng, 54 đặc trưng) phân loại 7 kiểu thảm rừng.
 - **Thách thức cốt lõi**: Chi phí tính toán trên Colab và mất cân bằng lớp cực đoan (Lớp 1 & 2 chiếm 85.22%, Lớp 4 chỉ 0.473%), giả thuyết pha loãng đặc trưng của 40 cột đất One-Hot (cần kiểm chứng bằng ablation).
-- **Yêu cầu & Mục tiêu**: Thực thi 100% trên Google Colab, lấy mẫu phân tầng 15% ($n = 87.152$ dòng) cho pha thử nghiệm, trích xuất luật sinh thái If-Then; ngưỡng kỳ vọng tối thiểu Accuracy ≥ 88%, Macro F1 ≥ 0.78, Recall lớp 4 ≥ 75% (**[KỲ VỌNG]**, do nhóm đặt). **[SỐ ĐO]** mô hình cuối trên D_final (chia ngẫu nhiên): Accuracy 0,974, Macro-F1 0,951, Recall lớp 4 0,874; trên vùng chưa thấy (E6) Macro-F1 chỉ ≈ 0,28 — xem mục 3.2 của tài liệu.
+- **Yêu cầu & Mục tiêu**: Thực thi 100% trên Google Colab, lấy mẫu phân tầng 15% ($n = 87.152$ dòng) cho pha thử nghiệm, trích xuất luật sinh thái If-Then; ngưỡng kỳ vọng tối thiểu Accuracy ≥ 88%, Macro F1 ≥ 0.78, Recall lớp 4 ≥ 75% (**[KỲ VỌNG]**, do nhóm đặt). **[SỐ ĐO]** mô hình cuối trên D_final (chia ngẫu nhiên): Accuracy 0,975, Macro-F1 0,952, Recall lớp 4 0,883; trên vùng chưa thấy (E6) Macro-F1 chỉ ≈ 0,37 — xem mục 3.2 của tài liệu.
 
 ### 2. [02_ke_hoach_va_kien_truc/KE_HOACH_TRIEN_KHAI.md](02_ke_hoach_va_kien_truc/KE_HOACH_TRIEN_KHAI.md)
 - **Kiến trúc giải pháp**: Sơ đồ luồng dữ liệu (Data Pipeline Flowchart) từ lấy mẫu, tạo đặc trưng đến huấn luyện và trích xuất luật.
@@ -48,7 +48,7 @@ docs/
 
 ### 2b. [02_ke_hoach_va_kien_truc/KE_HOACH_THI_NGHIEM.md](02_ke_hoach_va_kien_truc/KE_HOACH_THI_NGHIEM.md) (mới)
 - **Thiết kế thí nghiệm**: ablation (trọng số lớp, biểu diễn thổ nhưỡng, đặc trưng sinh thái, kích thước mẫu), learning curve, đánh giá trên hold-out lớn (≈ 493.860 mẫu chưa dùng), khoảng tin cậy cho lớp hiếm, mẫu bảng báo cáo.
-- **Tiến độ [SỐ ĐO]**: E0–E6 đã chạy; phân chia dữ liệu D_final / D_val / D_pool / S15 và kết quả tóm tắt được ghi trong tài liệu; E7 (cây đại diện) chưa chạy.
+- **Tiến độ [SỐ ĐO]**: E0–E6 đã chạy, kèm ablation đặc trưng gắn vị trí (mô hình cuối bỏ 4 cột `Wilderness_Area`); phân chia dữ liệu D_final / D_val / D_pool / S15 và kết quả tóm tắt được ghi trong tài liệu; E7 (cây đại diện) chưa chạy.
 
 ### 3. [03_co_so_ly_thuyet/THUAT_TOAN_RANDOM_FOREST.md](03_co_so_ly_thuyet/THUAT_TOAN_RANDOM_FOREST.md)
 - **Lý thuyết nền tảng**: Cây quyết định CART, công thức độ vẩn đục Gini Impurity, hiện tượng phương sai cao.

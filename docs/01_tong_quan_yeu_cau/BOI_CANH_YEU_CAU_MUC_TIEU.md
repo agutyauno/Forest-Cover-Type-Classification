@@ -81,16 +81,16 @@ Mục tiêu phân loại là **7 kiểu thảm rừng ôn đới núi cao**, ph�
 - **Thời gian & RAM**: **[CẦN ĐO]** cho từng cấu hình; mục tiêu tham khảo $< 3$ phút và $< 2$ GB cho pha thử nghiệm 15%.
 
 #### Đối chiếu ngưỡng kỳ vọng với số đo — **[SỐ ĐO]**
-> Nguồn: notebook Bước 10 (D_final: 116.202 mẫu, 20% toàn bộ, chỉ đánh giá một lần; lớp 4 = 549 mẫu) và Bước 11 (E6). KTC 95%: bootstrap 1.000 lần cho Accuracy/Macro-F1, Wilson cho Recall.
+> Nguồn: notebook Bước 10 (D_final: 116.202 mẫu, 20% toàn bộ, chỉ đánh giá một lần; lớp 4 = 549 mẫu) và Bước 11 (E6). KTC 95%: bootstrap 1.000 lần. Mô hình cuối: 57 đặc trưng (không có `Wilderness_Area`), 200 cây.
 
 | Chỉ số | Ngưỡng kỳ vọng | Mô hình cuối — D_final (chia ngẫu nhiên) | Mô hình cuối — vùng chưa thấy (E6, TB 4 vùng) |
 | :--- | :---: | :---: | :---: |
-| Accuracy | ≥ 88% | 0,9742 [0,9733–0,9751] | 0,45 |
-| Macro-F1 | ≥ 0,78 | 0,9510 [0,9476–0,9545] | 0,28 (lớp đã thấy) |
-| Recall lớp 4 | ≥ 75% | 0,874 [0,844–0,900] | Không đo được: lớp 4 chỉ có ở vùng 4 |
+| Accuracy | ≥ 88% | 0,9747 [0,9739–0,9756] | 0,53 |
+| Macro-F1 | ≥ 0,78 | 0,9523 [0,9491–0,9558] | 0,37 (lớp đã thấy) |
+| Recall lớp 4 | ≥ 75% | 0,883 [0,854–0,908] | Không đo được: lớp 4 chỉ có ở vùng 4 |
 
 - Mô hình cuối đạt các ngưỡng kỳ vọng khi đánh giá bằng **chia ngẫu nhiên** trong 4 vùng nghiên cứu.
-- Khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện, mô hình không đạt ngưỡng, và còn thấp hơn baseline E0 (Macro-F1 0,32). Vì vậy các ngưỡng trên chỉ nên được diễn giải cho phạm vi **bên trong khu vực nghiên cứu**; xem Bước 12 của notebook.
+- Khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện, mô hình không đạt ngưỡng (Macro-F1 0,37; baseline E0 0,32). Vì vậy các ngưỡng trên chỉ nên được diễn giải cho phạm vi **bên trong khu vực nghiên cứu**; xem Bước 12 của notebook.
 
 ### 3.3. Danh mục sản phẩm bàn giao (Deliverables)
 1. **Notebook `notebooks/Phan_loai_tham_rung.ipynb`**: tự chứa, chạy từ đầu đến cuối bằng "Run All" (đã kiểm tra trên máy cục bộ). Nút "Open In Colab" và kiểm tra chạy trên Colab: **[CẦN THỰC HIỆN]** ở Bước 8.
