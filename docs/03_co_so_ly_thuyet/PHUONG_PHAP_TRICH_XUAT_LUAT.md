@@ -268,4 +268,4 @@ Lưu ý: ngưỡng trong cột `luat` được làm tròn 2 chữ số chỉ đ�
 1. **Giá trị kỳ vọng**: đi từ mô hình hộp đen đến tập luật tường minh, có đo Confidence/Coverage/Lift và **Fidelity** so với RF, thay vì chỉ gọi hàm thư viện.
 2. **Hạn chế cần nêu rõ**: (a) cây đại diện nông chỉ *xấp xỉ* RF, nên luật chỉ mô tả một phần hành vi của RF (Fidelity); (b) luật mô tả tương quan, không phải quan hệ nhân quả; (c) dữ liệu Covertype chỉ gồm một vùng ở Colorado, nên luật không mặc nhiên đúng cho vùng khác.
 3. **Đối chiếu yêu cầu gốc**: đề bài gốc nằm ở [`docs/detai.md`](../detai.md) (yêu cầu: phân loại 7 kiểu thảm rừng, xử lý dữ liệu lớn bằng lấy mẫu, luật sinh thái rừng, thực hiện trên Google Colab).
-4. **[SỐ ĐO] E6**: mô hình chủ có Macro-F1 ≈ 0,32 trên vùng hoang dã chưa thấy (so với 0,97 khi chia ngẫu nhiên). Luật xấp xỉ mô hình này vì vậy mô tả hành vi trong phạm vi 4 vùng nghiên cứu, củng cố hạn chế (c).
+4. **[SỐ ĐO] E6**: mô hình chủ có Macro-F1 ≈ 0,28 trên vùng hoang dã chưa thấy (so với 0,97 khi chia ngẫu nhiên; baseline E0 đạt 0,32). Luật xấp xỉ mô hình này vì vậy mô tả hành vi trong phạm vi 4 vùng nghiên cứu, củng cố hạn chế (c).

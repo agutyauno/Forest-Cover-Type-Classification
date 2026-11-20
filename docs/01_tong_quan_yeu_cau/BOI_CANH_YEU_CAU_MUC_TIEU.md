@@ -44,8 +44,8 @@ Mục tiêu phân loại là **7 kiểu thảm rừng ôn đới núi cao**, ph�
 
 ### 2.1. Thách thức kỹ thuật
 1. **Chi phí tính toán trên Google Colab (Colab Resource Constraints)**:
-   - Bộ dữ liệu có $581.012$ mẫu $\times$ $54$ thuộc tính (khoảng 0,25 GB nếu lưu `float64`, có thể giảm bằng ép kiểu `float32`/`uint8`), nên việc *nạp dữ liệu* không phải nút thắt. Chi phí chính nằm ở huấn luyện Random Forest nhiều cây sâu và ở việc lặp lại nhiều cấu hình thí nghiệm (ablation, tinh chỉnh siêu tham số). Thời gian/RAM thực tế trên Colab **[CẦN ĐO]**. **[SỐ ĐO]** trên máy cục bộ (24 lõi CPU, 16 GB RAM): chạy toàn bộ notebook ≈ 48 phút; huấn luyện RF 100 cây, không giới hạn độ sâu trên 348.608 mẫu ≈ 21 s; RAM tiến trình tại các điểm kiểm tra ≤ ≈ 2,2 GB.
-   - Giải pháp dự kiến: dùng **lấy mẫu phân tầng theo nhãn ($f = 15\%$, $n = 87.152$ mẫu)** cho *pha thử nghiệm nhanh*, giữ nguyên tỷ lệ 7 lớp (xem `CHIEN_LUOC_LAY_MAU_PHAN_TANG.md`). Kích thước mẫu cho mô hình cuối được quyết định bằng **learning curve** (15% / 30% / 50% / 100%), vì giảm dữ liệu có thể làm giảm hiệu năng. **[SỐ ĐO]** E4: Macro-F1 trên D_val tăng từ 0,848 (≈ 87K mẫu) lên 0,921 (348.608 mẫu) và chưa bão hoà, nên mô hình cuối (v2) dùng toàn bộ D_pool.
+   - Bộ dữ liệu có $581.012$ mẫu $\times$ $54$ thuộc tính (khoảng 0,25 GB nếu lưu `float64`, có thể giảm bằng ép kiểu `float32`/`uint8`), nên việc *nạp dữ liệu* không phải nút thắt. Chi phí chính nằm ở huấn luyện Random Forest nhiều cây sâu và ở việc lặp lại nhiều cấu hình thí nghiệm (ablation, tinh chỉnh siêu tham số). Thời gian/RAM thực tế trên Colab **[CẦN ĐO]**. **[SỐ ĐO]** trên máy cục bộ (24 lõi CPU, 16 GB RAM): chạy toàn bộ notebook ≈ 55 phút; huấn luyện RF 100 cây, không giới hạn độ sâu, 65 cột trên 348.608 mẫu ≈ 13 s; RAM tiến trình tại các điểm kiểm tra ≤ ≈ 1,5 GB.
+   - Giải pháp dự kiến: dùng **lấy mẫu phân tầng theo nhãn ($f = 15\%$, $n = 87.152$ mẫu)** cho *pha thử nghiệm nhanh*, giữ nguyên tỷ lệ 7 lớp (xem `CHIEN_LUOC_LAY_MAU_PHAN_TANG.md`). Kích thước mẫu cho mô hình cuối được quyết định bằng **learning curve** (15% / 30% / 50% / 100%), vì giảm dữ liệu có thể làm giảm hiệu năng. **[SỐ ĐO]** Notebook dùng mẫu khảo sát S15 (15% toàn bộ, rút phân tầng từ D_pool) cho E0–E3. E4: Macro-F1 trên D_val tăng từ 0,890 (25% D_pool ≈ S15) lên 0,940 (100% D_pool, 348.608 mẫu) và chưa bão hoà, nên mô hình cuối dùng toàn bộ D_pool.
 2. **Mất cân bằng lớp cực đoan (Severe Class Imbalance)** `[1, 3]`:
    - Hai lớp đa số (Lớp 1 & Lớp 2) chiếm tới **$85.22\%$** diện tích rừng ($495.141$ mẫu).
    - Lớp thiểu số (Lớp 4 - *Cottonwood/Willow*) chỉ chiếm vỏn vẹn **$0.473\%$** ($2.747$ mẫu).
@@ -77,20 +77,20 @@ Mục tiêu phân loại là **7 kiểu thảm rừng ôn đới núi cao**, ph�
 
 - **Độ chính xác tổng thể (Overall Accuracy)**: $\ge 88\%$ trên tập kiểm thử độc lập (mốc tham chiếu từ nghiên cứu gốc: LDA 58.4% và ANN 70.6% — Blackard & Dean `[3]`).
 - **Macro F1-score**: $\ge 0.78$.
-- **Recall lớp 4 (*Cottonwood/Willow*)**: $\ge 75\%$, báo cáo kèm **khoảng tin cậy** (lớp 4 chỉ có ≈ 82 mẫu trong tập test 20% của mẫu 15%; xem `KE_HOACH_THI_NGHIEM.md`).
+- **Recall lớp 4 (*Cottonwood/Willow*)**: $\ge 75\%$, báo cáo kèm **khoảng tin cậy** (thiết kế ban đầu: ≈ 82 mẫu lớp 4 trong tập test của mẫu 15%; notebook hiện dùng D_val và D_final, mỗi tập ≈ 549 mẫu lớp 4; xem `KE_HOACH_THI_NGHIEM.md`).
 - **Thời gian & RAM**: **[CẦN ĐO]** cho từng cấu hình; mục tiêu tham khảo $< 3$ phút và $< 2$ GB cho pha thử nghiệm 15%.
 
 #### Đối chiếu ngưỡng kỳ vọng với số đo — **[SỐ ĐO]**
-> Nguồn: notebook mục 5B.6 (D_final: 116.202 mẫu rút từ hold-out cũ, chỉ đánh giá một lần; lớp 4 = 549 mẫu) và mục 5B.7 (E6). KTC 95%: bootstrap 1.000 lần cho Accuracy/Macro-F1, Wilson cho Recall.
+> Nguồn: notebook Bước 10 (D_final: 116.202 mẫu, 20% toàn bộ, chỉ đánh giá một lần; lớp 4 = 549 mẫu) và Bước 11 (E6). KTC 95%: bootstrap 1.000 lần cho Accuracy/Macro-F1, Wilson cho Recall.
 
-| Chỉ số | Ngưỡng kỳ vọng | Bước 4.7 (mẫu 15%) | v2 (Bước 5B) | v2 — vùng chưa thấy (E6) |
-| :--- | :---: | :---: | :---: | :---: |
-| Accuracy | ≥ 88% | 0,8908 [0,8891–0,8926] | 0,9754 [0,9745–0,9764] | 0,50 (TB 4 vùng) |
-| Macro-F1 | ≥ 0,78 | 0,834 [0,829–0,840] | 0,954 [0,951–0,957] | 0,32 (TB 4 vùng, lớp đã thấy) |
-| Recall lớp 4 | ≥ 75% | 0,763 [0,726–0,797] | 0,889 [0,860–0,913] | Không đo được: lớp 4 chỉ có ở vùng 4 |
+| Chỉ số | Ngưỡng kỳ vọng | Mô hình cuối — D_final (chia ngẫu nhiên) | Mô hình cuối — vùng chưa thấy (E6, TB 4 vùng) |
+| :--- | :---: | :---: | :---: |
+| Accuracy | ≥ 88% | 0,9742 [0,9733–0,9751] | 0,45 |
+| Macro-F1 | ≥ 0,78 | 0,9510 [0,9476–0,9545] | 0,28 (lớp đã thấy) |
+| Recall lớp 4 | ≥ 75% | 0,874 [0,844–0,900] | Không đo được: lớp 4 chỉ có ở vùng 4 |
 
-- Cả hai mô hình đạt các ngưỡng kỳ vọng khi đánh giá bằng **chia ngẫu nhiên** trong 4 vùng nghiên cứu.
-- Khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện, không mô hình nào đạt ngưỡng. Vì vậy các ngưỡng trên chỉ nên được diễn giải cho phạm vi **bên trong khu vực nghiên cứu**; xem hạn chế ở mục 5B.8 của notebook.
+- Mô hình cuối đạt các ngưỡng kỳ vọng khi đánh giá bằng **chia ngẫu nhiên** trong 4 vùng nghiên cứu.
+- Khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện, mô hình không đạt ngưỡng, và còn thấp hơn baseline E0 (Macro-F1 0,32). Vì vậy các ngưỡng trên chỉ nên được diễn giải cho phạm vi **bên trong khu vực nghiên cứu**; xem Bước 12 của notebook.
 
 ### 3.3. Danh mục sản phẩm bàn giao (Deliverables)
 1. **Notebook `notebooks/Phan_loai_tham_rung.ipynb`**: tự chứa, chạy từ đầu đến cuối bằng "Run All" (đã kiểm tra trên máy cục bộ). Nút "Open In Colab" và kiểm tra chạy trên Colab: **[CẦN THỰC HIỆN]** ở Bước 8.

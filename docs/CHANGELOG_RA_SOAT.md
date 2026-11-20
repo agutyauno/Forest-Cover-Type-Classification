@@ -1,6 +1,6 @@
 # NHẬT KÝ CHỈNH SỬA SAU RÀ SOÁT
 
-Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
+Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo; đợt 3 (mục 1c) tái cấu trúc notebook. Số liệu ghi trong mục 1b thuộc bản notebook trước đợt 3. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
 
 ## 1. Đã sửa
 
@@ -32,9 +32,20 @@ Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đ�
 | 19 | `detai.md` đã có trong `docs/`; bỏ ghi chú "không nằm trong gói"; README gốc còn sót "Vườn quốc gia" → "Rừng quốc gia"; số tài liệu tham khảo 13 → 17 | Đính chính | `PHUONG_PHAP…`, `README.md` |
 | 20 | Hạn chế mới có số đo: E6 cho Macro-F1 ≈ 0,32 trên vùng chưa thấy (so với 0,86–0,97 khi chia ngẫu nhiên) | Kết quả cần được nêu cạnh mọi chỉ số chia ngẫu nhiên | `KE_HOACH_TRIEN_KHAI.md` (mục 3), `BOI_CANH…` (mục 3.2) |
 
+## 1c. Đợt 3 — Tái cấu trúc notebook thành một quy trình
+
+| # | Thay đổi | Lý do | File |
+| :-: | :--- | :--- | :--- |
+| 21 | Notebook viết lại thành 12 bước liền mạch. Phân chia D_final / D_val / D_pool đặt ngay ở Bước 4; mẫu khảo sát S15 (15% toàn bộ) rút từ D_pool cho E0–E3; E0–E6 chạy trên cùng một phép chia, mỗi so sánh lặp 3 seed. Bỏ phân chia Train/Test/Hold-out cũ, mô hình Bước 4.7 và phần CV sơ bộ | Bản trước có hai lớp nối tiếp (pha 15% rồi Bước 5B chia lại dữ liệu), khó theo dõi; Test cũ chỉ có 82 mẫu lớp 4 và vừa dùng để chọn cấu hình vừa dùng để báo cáo | `notebooks/Phan_loai_tham_rung.ipynb` |
+| 22 | Gộp hai hàm đặc trưng thành `build_features(df, eco, soil, dist_combo)`; gom cấu hình (seed, số cây, tỷ lệ chia) vào một cell; thêm hàm quy tắc chọn `choose_simplest()` dùng chung cho E1–E5 | Một nguồn duy nhất cho phép biến đổi đặc trưng và quy tắc ra quyết định | notebook |
+| 23 | Kết quả mới (số liệu thay đổi vì tập so sánh khác): E3 chọn One-Hot thay vì `Soil_Type_Code`; mô hình cuối 65 đặc trưng, `max_features=0.5`; D_final Macro-F1 0,951 [0,948–0,955]; E6: mô hình cuối 0,277, thấp hơn baseline E0 0,323 | Ghi nhận các kết luận thay đổi so với bản trước | `README.md`, `BOI_CANH…`, `KE_HOACH_*`, `THUAT_TOAN…`, `PHUONG_PHAP…`, `docs/README.md` |
+| 24 | Đổi tên đầu ra: `rf_final_config.json`, `splits.npz`, `e0_e3_explore.csv`, `e5_tuning.csv`, `feature_importance.csv`, `eval_confusion_final.png`; gỡ các file đầu ra cũ không còn được tạo (vẫn còn trong lịch sử git) | Tên file khớp với cấu trúc mới | `models/`, `results/` |
+| 25 | Sửa lỗi `permutation_importance(n_jobs=-1)` thất bại do phải pickle rừng lớn sang tiến trình con; chuyển sang `n_jobs=1` | Lỗi chỉ xuất hiện ở quy mô dữ liệu đầy đủ | notebook, Bước 10.2 |
+
 ## 2. Cần người thực hiện xử lý (tiếp theo)
 
 1. ~~Đối chiếu bộ `docs/` với `detai.md`~~ — `detai.md` đã có trong `docs/`. Yêu cầu "thực hiện trên Google Colab" **chưa được kiểm tra**: notebook mới chạy trên máy cục bộ.
 2. Các mục **[KỲ VỌNG]/[CẦN ĐO]** liên quan tới Bước 1–5B đã có số đo kèm theo. Còn lại: thời gian/RAM trên Colab; mọi số liệu của Bước 6–8 (Fidelity, luật, hàm tương tác). Hàm trích luật mới chỉ chạy trên dữ liệu giả lập, chưa chạy trên Covertype.
-3. **[GIẢ THUYẾT]** cần kiểm chứng trước hoặc cùng Bước 6: loại các đặc trưng gắn với vị trí (Roadways, Fire_Points và tổ hợp của chúng) có thể cải thiện kết quả E6.
-4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu các giả thuyết (pha loãng One-Hot, hiệu quả `class_weight`) với kết quả E1–E3 và E5: `class_weight=None` được chọn ở E5 theo quy tắc ít nút nhất, nhưng có Recall lớp 4 thấp hơn `balanced_subsample`.
+3. **[GIẢ THUYẾT]** cần kiểm chứng trước hoặc cùng Bước 6: loại các đặc trưng gắn với vị trí (Roadways, Fire_Points, tổ hợp của chúng, Wilderness) có thể cải thiện kết quả E6. Số đo hiện có ủng hộ hướng kiểm tra này: mô hình cuối kém baseline E0 ở vùng chưa thấy, chủ yếu ở WA4, và `Fire_Road_Sum` đứng thứ 3 về Permutation importance.
+4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu với số đo: (a) giả thuyết pha loãng One-Hot **không** được ủng hộ (E3: One-Hot cao hơn các phương án gộp); (b) `class_weight='balanced'` tốt nhất trên S15 (E1) nhưng `None` tốt hơn ở quy mô đầy đủ (E5); (c) `balanced_subsample, min_samples_leaf=2` có Recall lớp 4 cao hơn cấu hình cuối, đổi lại F1 thấp hơn 0,004.
+5. E2 chỉ bỏ từng nhóm đặc trưng khi chưa có tổ hợp khoảng cách; phương án "tổ hợp khoảng cách + bỏ `Aspect_Trig`/`Delta_Hillshade`" chưa được thử.

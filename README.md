@@ -10,17 +10,17 @@
 ```
 .
 ├── notebooks/
-│   └── Phan_loai_tham_rung.ipynb   # Notebook chính: Bước 1–5B (đã chạy, có output)
+│   └── Phan_loai_tham_rung.ipynb   # Notebook chính: Bước 1–12, E0–E6 (đã chạy, có output)
 ├── data/
 │   ├── README.md                   # Nguồn dữ liệu, cách lấy dữ liệu
 │   └── raw/                        # covtype.info (trong git); covtype.data(.gz) (ngoài git, notebook tự tải)
 ├── models/
 │   ├── README.md                   # Mô tả từng mô hình
-│   ├── rf_v2_config.json           # Cấu hình mô hình chủ v2 (trong git)
-│   └── *.joblib, splits_v2.npz     # Ngoài git — tạo lại bằng cách chạy notebook
+│   ├── rf_final_config.json        # Cấu hình mô hình cuối (trong git)
+│   └── *.joblib, splits.npz        # Ngoài git — tạo lại bằng cách chạy notebook
 ├── results/
 │   ├── figures/                    # Biểu đồ do notebook xuất ra (EDA, ma trận nhầm lẫn, E4, E6…)
-│   └── tables/                     # Bảng số đo: ablation_results.csv, e4/e5/e6_*.csv
+│   └── tables/                     # Bảng số đo: e0_e3_explore, e4_learning_curve, e5_tuning, e6_lowo, feature_importance
 ├── docs/                           # Đặc tả, kế hoạch, cơ sở lý thuyết, tài liệu tham khảo (xem docs/README.md)
 │   └── ma_nguon_mau/               # Hàm trích xuất luật + kiểm thử trên dữ liệu giả lập
 ├── AGENTS.md                       # Quy tắc văn phong khoa học của dự án
@@ -36,10 +36,10 @@ jupyter notebook notebooks/Phan_loai_tham_rung.ipynb   # rồi chọn "Run All"
 ```
 - Notebook tự tìm thư mục gốc dự án, nên chạy được từ gốc hoặc từ `notebooks/`.
 - Nếu `data/raw/covtype.data` không có, notebook tự tải qua `sklearn.datasets.fetch_covtype()` (đã đối chiếu: trùng khớp từng giá trị với file UCI).
-- Thời gian chạy toàn bộ đo được ≈ 48 phút trên máy 24 lõi CPU, 16 GB RAM (Bước 5B chiếm phần lớn). RAM tiến trình đo tại các điểm kiểm tra trong notebook cao nhất ≈ 2,2 GB (đo rời rạc, không phải đỉnh liên tục).
+- Thời gian chạy toàn bộ đo được ≈ 55 phút trên máy 24 lõi CPU, 16 GB RAM (E6 ≈ 30 phút, E5 ≈ 16 phút). RAM tiến trình tại các điểm kiểm tra ≈ 1,5 GB khi huấn luyện mô hình cuối (đo rời rạc, không phải đỉnh liên tục).
 
 **Google Colab** (yêu cầu của đề bài, `docs/detai.md`): clone repo, `%cd` vào thư mục repo rồi chạy notebook.
-**[CẦN KIỂM TRA]** — notebook mới được chạy trên máy cục bộ. Chưa đo thời gian và RAM trên Colab; Colab miễn phí có ít lõi CPU hơn, nên Bước 5B dự kiến chạy lâu hơn đáng kể.
+**[CẦN KIỂM TRA]** — notebook mới được chạy trên máy cục bộ. Chưa đo thời gian và RAM trên Colab; Colab miễn phí có ít lõi CPU hơn, nên notebook dự kiến chạy lâu hơn đáng kể.
 
 ---
 
@@ -57,23 +57,25 @@ jupyter notebook notebooks/Phan_loai_tham_rung.ipynb   # rồi chọn "Run All"
 
 ---
 
-## 📊 Kết quả chính (số đo thực nghiệm, chi tiết ở notebook mục 5B.8)
+## 📊 Kết quả chính (số đo thực nghiệm, chi tiết ở notebook Bước 12)
 
-| Đánh giá | Mô hình Bước 4.7 (mẫu 15%) | Mô hình v2 (Bước 5B) |
-| :--- | :---: | :---: |
-| Macro-F1 trên D_final (chia ngẫu nhiên, n = 116.202) [KTC 95%] | 0,834 [0,829–0,840] | 0,954 [0,951–0,957] |
-| Recall lớp 4 trên D_final [Wilson 95%] | 0,763 [0,726–0,797] | 0,889 [0,860–0,913] |
-| Macro-F1 trên vùng chưa thấy (E6, trung bình 4 vùng, lớp đã thấy) | 0,316 | 0,323 |
+Mô hình cuối: Random Forest 150 cây, 65 đặc trưng (54 cột gốc + 5 đặc trưng sinh thái + 6 tổ hợp khoảng cách), `criterion='entropy'`, `max_features=0.5`, `max_depth=None`, học trên 348.608 mẫu.
 
-**Hạn chế chính**: khi kiểm thử trên vùng hoang dã không có trong dữ liệu huấn luyện (E6), hiệu năng của cả hai mô hình giảm mạnh, và lợi thế của v2 gần như không còn. Các chỉ số trên D_final chỉ phản ánh năng lực dự đoán **bên trong 4 vùng nghiên cứu**.
+| Đánh giá | Số đo [KTC 95%] |
+| :--- | :---: |
+| Accuracy trên D_final (chia ngẫu nhiên, n = 116.202) | 0,9742 [0,9733–0,9751] |
+| Macro-F1 trên D_final | 0,9510 [0,9476–0,9545] |
+| Recall lớp 4 trên D_final (n = 549) | 0,874 [0,844–0,900] |
+| Macro-F1 trên vùng chưa thấy (E6, TB 4 vùng, lớp đã thấy) — mô hình cuối | 0,277 |
+| Như trên — baseline E0 (54 cột gốc, tham số mặc định) | 0,323 |
+
+**Hạn chế chính**: khi kiểm thử trên một vùng hoang dã không có trong dữ liệu huấn luyện (E6), hiệu năng giảm mạnh. Mô hình cuối còn thấp hơn baseline E0, chủ yếu do kết quả ở vùng WA4. Các chỉ số trên D_final chỉ phản ánh năng lực dự đoán **bên trong 4 vùng nghiên cứu**.
 
 ---
 
 ## 🚀 Trạng thái triển khai
 - [x] Tài liệu đặc tả, cơ sở lý thuyết và dẫn chứng khoa học trong `docs/`.
-- [x] Bước 1–5: nạp dữ liệu, EDA, lấy mẫu phân tầng, đặc trưng sinh thái, ablation E0–E3, E5 sơ bộ trên mẫu 15%.
-- [x] Bước 5B: E4 (learning curve), E2b/E3-D (đặc trưng), E5 mở rộng, mô hình chủ v2, đánh giá một lần trên D_final.
-- [x] E6: leave-one-wilderness-out.
-- [ ] Ablation loại đặc trưng gắn với vị trí (Roadways, Fire_Points) dưới giao thức E6 — **[GIẢ THUYẾT]** có thể cải thiện khả năng chuyển vùng.
-- [ ] Bước 6–8: trích xuất luật sinh thái (E7), hàm tương tác thực địa, báo cáo tổng kết.
+- [x] Notebook một quy trình (Bước 1–12): nạp dữ liệu, EDA, phân chia D_final / D_val / D_pool, mẫu khảo sát S15, E0–E3 (trọng số lớp, đặc trưng sinh thái, thổ nhưỡng), E4 (quy mô dữ liệu), E5 (siêu tham số), mô hình cuối, đánh giá một lần trên D_final, E6 (leave-one-wilderness-out).
+- [ ] Ablation loại đặc trưng gắn với vị trí (Roadways, Fire_Points, tổ hợp của chúng, Wilderness) dưới giao thức E6 — **[GIẢ THUYẾT]** có thể cải thiện khả năng chuyển vùng.
+- [ ] Trích xuất luật sinh thái (E7), hàm tương tác thực địa, báo cáo tổng kết.
 - [ ] Kiểm tra chạy toàn bộ notebook trên Google Colab.

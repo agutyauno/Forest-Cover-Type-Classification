@@ -3,7 +3,7 @@
 
 > **Trạng thái**: tài liệu thiết kế (mới thêm sau rà soát). Các thí nghiệm dưới đây biến những **[GIẢ THUYẾT]** trong bộ tài liệu thành các phép đo có thể kiểm chứng.
 >
-> **Cập nhật tiến độ**: E0–E3 và E5 sơ bộ đã chạy trên mẫu 15% (notebook Bước 4). E4, E2b (tổ hợp khoảng cách), E3-D (Code + Zones) và E5 mở rộng đã chạy ở **Bước 5B** với phân chia mới: D_final 20% (rút từ hold-out cũ, đánh giá một lần) / D_val 20% / D_pool 60%. E6 (leave-one-wilderness-out) đã chạy ở mục 5B.7. Kết quả và hạn chế xem mục 5B.8 của notebook. E7 chưa chạy.
+> **Cập nhật tiến độ**: E0–E6 đã chạy trong notebook (một quy trình 12 bước, phân chia dữ liệu ở mục 2.1). Kết quả, quyết định và hạn chế: Bước 12 của notebook; bảng số đo trong `results/tables/`. E7 chưa chạy.
 >
 > **Tài liệu liên quan**: [Kế hoạch triển khai](KE_HOACH_TRIEN_KHAI.md) · [Chiến lược lấy mẫu](../03_co_so_ly_thuyet/CHIEN_LUOC_LAY_MAU_PHAN_TANG.md) · [Kỹ thuật đặc trưng](../03_co_so_ly_thuyet/KY_THUAT_TAO_DAC_TRUNG_SINH_THAI.md) · [Trích xuất luật](../03_co_so_ly_thuyet/PHUONG_PHAP_TRICH_XUAT_LUAT.md)
 
@@ -17,28 +17,18 @@ Trả lời bằng số đo các câu hỏi mà tài liệu thiết kế mới c
 
 ## 2. QUY TRÌNH DỮ LIỆU VÀ ĐÁNH GIÁ
 
-### 2.1. Phân chia dữ liệu
-| Tập | Cách tạo | Quy mô xấp xỉ | Dùng để |
-| :--- | :--- | :---: | :--- |
-| **Mẫu 15%** | Lấy mẫu phân tầng theo nhãn từ 581.012 dòng | 87.152 | Toàn bộ pha thử nghiệm |
-| **Train** | 80% mẫu 15%, `stratify=y` | ≈ 69.721 | Huấn luyện; tinh chỉnh bằng CV **chỉ trên Train** |
-| **Test** | 20% mẫu 15%, `stratify=y` | ≈ 17.431 (lớp 4: ≈ 82) | Đánh giá chính |
-| **Hold-out lớn** | 85% còn lại của dữ liệu gốc | ≈ 493.860 (lớp 4: ≈ 2.335) | Đánh giá cuối (một lần) và bể truy vấn cho cây đại diện |
-
-- Hold-out lớn chia thành hai phần **rời nhau**: *bể truy vấn* (tối đa vài chục nghìn mẫu, dùng để huấn luyện cây đại diện trên dự đoán của RF) và *phần đánh giá cuối*.
-- Không dùng hold-out để chọn siêu tham số hay cấu hình. Chỉ nhìn kết quả hold-out sau khi đã chốt cấu hình.
-- Mọi tập đi qua **cùng một hàm biến đổi đặc trưng**; trọng số lớp chỉ tính trên Train.
-
-### 2.1b. Phân chia dữ liệu của Bước 5B (dùng cho E4–E7) — **[SỐ ĐO]**
-Sau E0–E3, dữ liệu được chia lại để có tập so sánh lớn hơn và một tập đánh giá cuối chưa từng dùng để chọn cấu hình:
-
+### 2.1. Phân chia dữ liệu (đã triển khai)
 | Tập | Cách tạo | Quy mô (lớp 4) | Dùng để |
 | :--- | :--- | :---: | :--- |
-| **D_final** | 20% toàn bộ, phân tầng, **chỉ rút từ hold-out cũ** | 116.202 (549) | Đánh giá một lần sau khi chốt cấu hình; đo Fidelity ở E7 |
-| **D_val** | 20% toàn bộ, từ phần còn lại | 116.202 (550) | So sánh cấu hình ở E4, E2b, E5; bể truy vấn cho cây đại diện ở E7 |
-| **D_pool** | 60% còn lại | 348.608 (1.648) | Huấn luyện |
+| **D_final** | 20% toàn bộ, `stratify=y` | 116.202 (549) | Đánh giá **một lần** sau khi chốt cấu hình; đo Fidelity ở E7 |
+| **D_val** | 20% toàn bộ, `stratify=y` | 116.202 (550) | So sánh cấu hình ở E0–E5; bể truy vấn cho cây đại diện ở E7 |
+| **D_pool** | 60% còn lại | 348.608 (1.648) | Bể huấn luyện (E4, E5, mô hình cuối) |
+| **S15** | 15% toàn bộ, rút phân tầng từ D_pool | 87.152 | Huấn luyện ở pha khảo sát E0–E3 |
 
-Chỉ số dòng của các tập được lưu trong `models/splits_v2.npz` (ngoài git; tạo lại khi chạy notebook).
+- Không dùng D_final để chọn siêu tham số hay cấu hình. Chỉ nhìn kết quả D_final sau khi đã chốt cấu hình.
+- Mọi tập đi qua **cùng một hàm biến đổi đặc trưng** (`build_features()`); trọng số lớp do scikit-learn tính trên dữ liệu huấn luyện.
+- Chỉ số dòng của các tập được lưu trong `models/splits.npz` (ngoài git; tạo lại khi chạy notebook).
+- *Thiết kế ban đầu* (mẫu 15% chia Train 80% / Test 20%, hold-out 85%) đã được thay bằng phân chia trên. Lý do: Test cũ chỉ có ≈ 82 mẫu lớp 4, và chính Test đó vừa dùng để chọn cấu hình vừa dùng để báo cáo kết quả.
 
 ### 2.2. Lặp và độ bất định
 - Lặp tối thiểu 3 seed (khác nhau ở lấy mẫu, chia tập, RF) hoặc `StratifiedKFold` 5 phần trên Train; báo cáo trung bình ± độ lệch chuẩn.
@@ -48,7 +38,7 @@ Chỉ số dòng của các tập được lưu trong `models/splits_v2.npz` (ng
 Accuracy; Macro-F1; Precision/Recall/F1 từng lớp (đặc biệt lớp 4); ma trận nhầm lẫn; thời gian huấn luyện; RAM đỉnh; kích thước mô hình.
 
 ### 2.4. Khoảng tin cậy cho lớp hiếm
-Recall lớp 4 trên Test dựa trên ≈ 82 mẫu nên rất bất định: Recall ≈ 0.80 có khoảng tin cậy 95% khoảng ±9 điểm phần trăm. Trên hold-out lớn (≈ 2.335 mẫu lớp 4) khoảng này thu hẹp còn khoảng ±1.6 điểm. Luôn báo cáo khoảng tin cậy Wilson hoặc bootstrap kèm Recall lớp 4.
+Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80 có khoảng tin cậy 95% khoảng ±9 điểm phần trăm. Với ≈ 549 mẫu (D_val, D_final), khoảng này thu hẹp còn khoảng ±3 điểm (số đo trên D_final: 0,874 [0,844–0,900]). Luôn báo cáo khoảng tin cậy Wilson hoặc bootstrap kèm Recall lớp 4.
 
 ---
 
@@ -93,4 +83,4 @@ Recall lớp 4 trên Test dựa trên ≈ 82 mẫu nên rất bất định: Rec
 - [x] Kiểm tra quy ước dấu của `Vertical_Distance_To_Hydrology` trước khi dùng $\text{Elevation}_{\text{water}}$.
 - [x] Một hàm biến đổi đặc trưng dùng chung cho Train/Test/hold-out/hàm tương tác.
 - [x] Trọng số lớp chỉ tính trên Train; hold-out không dùng để tinh chỉnh.
-- [x] Lưu kết quả ra CSV trong `results/tables/`. Các bảng E4–E6 có cột seed; `ablation_results.csv` (E0–E3) chỉ chạy một seed (42).
+- [x] Lưu kết quả ra CSV trong `results/tables/`, mọi bảng có cột seed (3 seed cho mọi so sánh).
