@@ -61,7 +61,7 @@ Biến $V$ (`Vertical_Distance_To_Hydrology`) là chênh lệch cao độ *tươ
 
 $$\text{Elevation}_{\text{water}} = \text{Elevation} - V$$
 
-(giả định quy ước dấu của UCI; **cần kiểm tra ở EDA**). Chỉ báo này có thể giúp phân biệt nguồn nước ở đáy thung lũng thấp với nguồn nước ở đai cao, từ đó hỗ trợ tách các sinh cảnh ven suối đai thấp (ví dụ Lớp 4 *Cottonwood/Willow*) khỏi các sinh cảnh đai cao (ví dụ Lớp 7 *Krummholz*) `[4, 5]`. Giá trị thực tế của đặc trưng là **[GIẢ THUYẾT]**.
+(giả định quy ước dấu của UCI; `covtype.info` không nêu quy ước dấu và EDA ở notebook mục 3.3 không kiểm chứng được giả định này). Chỉ báo này có thể giúp phân biệt nguồn nước ở đáy thung lũng thấp với nguồn nước ở đai cao, từ đó hỗ trợ tách các sinh cảnh ven suối đai thấp (ví dụ Lớp 4 *Cottonwood/Willow*) khỏi các sinh cảnh đai cao (ví dụ Lớp 7 *Krummholz*) `[4, 5]`. Giá trị thực tế của đặc trưng là **[GIẢ THUYẾT]**.
 
 ### 2.3. Giải quyết nghịch lý dữ liệu góc phương vị tuần hoàn (Aspect Trigonometric Transformation)
 Hướng sườn núi (`Aspect`) được đo đạc theo độ phương vị la bàn $\theta \in [0^\circ, 360^\circ)$.

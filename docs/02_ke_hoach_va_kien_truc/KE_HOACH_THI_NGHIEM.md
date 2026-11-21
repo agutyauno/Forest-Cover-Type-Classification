@@ -3,7 +3,7 @@
 
 > **Trạng thái**: tài liệu thiết kế (mới thêm sau rà soát). Các thí nghiệm dưới đây biến những **[GIẢ THUYẾT]** trong bộ tài liệu thành các phép đo có thể kiểm chứng.
 >
-> **Cập nhật tiến độ**: E0–E6 đã chạy trong notebook (một quy trình 12 bước, phân chia dữ liệu ở mục 2.1). Kết quả, quyết định và hạn chế: Bước 12 của notebook; bảng số đo trong `results/tables/`. E7 chưa chạy.
+> **Cập nhật tiến độ**: E0–E5 đã chạy trong notebook (một quy trình 11 bước, phân chia dữ liệu ở mục 2.1); E6 đã được loại khỏi phạm vi (xem bảng dưới). Kết quả, quyết định và hạn chế: Bước 11 của notebook; bảng số đo trong `results/tables/`. E7 chưa chạy.
 >
 > **Tài liệu liên quan**: [Kế hoạch triển khai](KE_HOACH_TRIEN_KHAI.md) · [Chiến lược lấy mẫu](../03_co_so_ly_thuyet/CHIEN_LUOC_LAY_MAU_PHAN_TANG.md) · [Kỹ thuật đặc trưng](../03_co_so_ly_thuyet/KY_THUAT_TAO_DAC_TRUNG_SINH_THAI.md) · [Trích xuất luật](../03_co_so_ly_thuyet/PHUONG_PHAP_TRICH_XUAT_LUAT.md)
 
@@ -52,7 +52,7 @@ Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80
 | **E3** | Biểu diễn đất nào tốt hơn? | (A) One-Hot, (B) `Soil_Type_Code`, (C) Climatic + Geologic Zone, (D) Code + Zones | Cấu hình tốt nhất của E1–E2 | Kiểm chứng giả thuyết "pha loãng" |
 | **E4** | Mẫu 15% mất bao nhiêu hiệu năng? | Kích thước train: 5% / 10% / 15% / 30% / 50% / 100% của pool huấn luyện | **Test cố định chung**: 20% toàn bộ dữ liệu, `stratify=y` (≈ 116.200; lớp 4 ≈ 549) | Learning curve; kèm thời gian và RAM từng mức |
 | **E5** | Siêu tham số nào hợp lý? | `max_depth` ∈ {10, 15, 20, None}; `n_estimators` ∈ {100, 150, 300}; `max_features`; `min_samples_leaf` | Cấu hình tốt nhất của E1–E3 | Chỉ CV trên Train |
-| **E6** | Mô hình có tổng quát hoá sang vùng khác không? | Leave-one-wilderness-out (huấn luyện 3 vùng `Wilderness_Area`, kiểm thử vùng còn lại) | Cấu hình đã chốt | Dữ liệu UCI **không có tọa độ**, đây chỉ là phép kiểm tra thay thế cho tự tương quan không gian `[16]`. Một số lớp có thể vắng ở một số vùng: kiểm tra trước và chỉ tính thước đo trên lớp có mặt. **[SỐ ĐO]** bổ sung (notebook mục 11.1): ablation 2×2 cột `Wilderness_Area` × 6 tổ hợp khoảng cách dưới cùng giao thức; mục 11.2: ma trận nhầm lẫn theo vùng và phân vị cao độ theo vùng × lớp |
+| **E6** | Mô hình có tổng quát hoá sang vùng khác không? | Leave-one-wilderness-out (huấn luyện 3 vùng `Wilderness_Area`, kiểm thử vùng còn lại) | Cấu hình đã chốt | **Đã loại khỏi phạm vi.** Phạm vi đánh giá của dự án là dự đoán bên trong 4 vùng nghiên cứu; 4 vùng khác nhau mạnh về đai cao độ và cơ cấu lớp, nên LOWO đo khả năng ngoại suy sang hệ sinh thái khác và không tách được tự tương quan không gian khỏi khác biệt giữa vùng. Phần ablation trên D_val (cột `Wilderness_Area` × 6 tổ hợp khoảng cách) được giữ ở notebook mục 8.1 |
 | **E7** | Cây đại diện xấp xỉ RF tốt đến đâu? | Nhãn huấn luyện (RF vs nhãn thật); `max_depth` 3–6; `min_samples_leaf` 50–500 | RF đã chốt | Đo Fidelity, accuracy, số lớp có luật, độ dài luật |
 
 ---
@@ -80,7 +80,7 @@ Với ≈ 82 mẫu lớp 4 (Test của thiết kế ban đầu), Recall ≈ 0.80
 
 - [x] Đặt `random_state`, ghi phiên bản thư viện (`requirements.txt`). Cấu hình Colab: **[CẦN KIỂM TRA]** — notebook mới chạy trên máy cục bộ.
 - [x] Đối chiếu số lượng từng lớp với bảng 7 lớp; xác nhận $581.012 \times 55$ và 0 giá trị thiếu.
-- [x] Kiểm tra quy ước dấu của `Vertical_Distance_To_Hydrology` trước khi dùng $\text{Elevation}_{\text{water}}$.
+- [x] Khảo sát phân bố `Vertical_Distance_To_Hydrology` trước khi dùng $\text{Elevation}_{\text{water}}$ (notebook mục 3.3). `covtype.info` không nêu quy ước dấu, nên diễn giải dấu vẫn là **giả định**; EDA chỉ minh hoạ hệ quả của giả định, không kiểm chứng được nó.
 - [x] Một hàm biến đổi đặc trưng dùng chung cho Train/Test/hold-out/hàm tương tác.
 - [x] Trọng số lớp chỉ tính trên Train; hold-out không dùng để tinh chỉnh.
 - [x] Lưu kết quả ra CSV trong `results/tables/`, mọi bảng có cột seed (3 seed cho mọi so sánh).

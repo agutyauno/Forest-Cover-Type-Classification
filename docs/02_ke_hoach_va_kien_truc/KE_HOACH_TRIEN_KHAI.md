@@ -13,7 +13,7 @@
 
 > **Trạng thái**: thiết kế trước khi thực hiện; mọi con số hiệu năng/thời gian/RAM là **[KỲ VỌNG]**, **[GIẢ THUYẾT]** hoặc **[CẦN ĐO]**. Thiết kế thí nghiệm và quy trình đánh giá: [KE_HOACH_THI_NGHIEM.md](KE_HOACH_THI_NGHIEM.md).
 >
-> **Cập nhật [SỐ ĐO]**: Bước 1–5 của kế hoạch (cùng các thí nghiệm E0–E6) đã chạy trong [`notebooks/Phan_loai_tham_rung.ipynb`](../../notebooks/Phan_loai_tham_rung.ipynb), tổ chức thành một quy trình 12 bước. Khác với thiết kế ban đầu dưới đây: (i) dữ liệu chia thành D_final 20% / D_val 20% / D_pool 60%, mẫu 15% (S15) chỉ dùng cho pha khảo sát E0–E3; (ii) từ E2 trở đi bỏ 4 cột `Wilderness_Area` (căn cứ: leave-one-wilderness-out, notebook mục 11.1); (iii) mô hình cuối: 348.608 mẫu, 200 cây, `max_depth=None`, `criterion='entropy'`, `max_features=0.35`, `class_weight=None`, 57 đặc trưng (xem `models/rf_final_config.json`).
+> **Cập nhật [SỐ ĐO]**: Bước 1–5 của kế hoạch (cùng các thí nghiệm E0–E5) đã chạy trong [`notebooks/Phan_loai_tham_rung.ipynb`](../../notebooks/Phan_loai_tham_rung.ipynb), tổ chức thành một quy trình 11 bước. Khác với thiết kế ban đầu dưới đây: (i) dữ liệu chia thành D_final 20% / D_val 20% / D_pool 60%, mẫu 15% (S15) chỉ dùng cho pha khảo sát E0–E3; (ii) từ E2 trở đi bỏ 4 cột `Wilderness_Area` (căn cứ: không khác biệt trên D_val và lý do diễn giải của luật, notebook đầu Bước 6 và mục 8.1); (iii) mô hình cuối: 348.608 mẫu, 200 cây, `max_depth=None`, `criterion='entropy'`, `max_features=0.35`, `class_weight=None`, 57 đặc trưng (xem `models/rf_final_config.json`).
 
 ## 1. KIẾN TRÚC GIẢI PHÁP VÀ PHƯƠNG PHÁP LUẬN KHOA HỌC
 
@@ -95,8 +95,8 @@ Các đặc trưng dưới đây là **đề xuất**; giá trị của từng n
 
 ## 3. HẠN CHẾ VÀ RỦI RO ĐÃ BIẾT
 
-- **Tự tương quan không gian và dịch chuyển giữa vùng**: các ô 30 m lân cận rất giống nhau, nên chia ngẫu nhiên có thể cho kết quả lạc quan hơn so với áp dụng ở vùng mới `[16]`. Dữ liệu UCI không có toạ độ; thí nghiệm leave-one-wilderness-out là phép kiểm tra thay thế, có giới hạn. **[SỐ ĐO]** E6 (Macro-F1 trên các lớp đã thấy, trung bình 4 vùng): mô hình cuối giảm từ 0,969 (chia ngẫu nhiên, D_final cùng vùng) xuống 0,374 (vùng chưa thấy; baseline E0 0,323; giữ cột `Wilderness_Area` 0,277). Phần suy giảm còn lại phù hợp với việc đai cao độ của cùng một kiểu rừng dịch chuyển vài trăm mét giữa các vùng (notebook mục 11.2). Luật trích xuất ở Bước 6 vì vậy cần được trình bày là mô tả trong phạm vi 4 vùng nghiên cứu.
+- **Tự tương quan không gian**: các ô 30 m lân cận rất giống nhau, nên chia ngẫu nhiên có thể cho kết quả lạc quan hơn so với áp dụng ở khu vực chưa khảo sát `[16]`. Dữ liệu UCI không có toạ độ nên mức chênh **chưa được đo**; dự án không đánh giá khả năng chuyển sang vùng mới (E6 đã được loại khỏi phạm vi). Luật trích xuất ở Bước 6 vì vậy cần được trình bày là mô tả trong phạm vi 4 vùng nghiên cứu.
 - **Lớp 4 rất ít mẫu**: 2.747 mẫu toàn bộ, ≈ 549 trong mỗi tập D_val / D_final; Recall lớp 4 vẫn cần báo cáo kèm khoảng tin cậy (ở D_final: 0,883 [0,854–0,908]).
 - **Luật chỉ là xấp xỉ**: cây đại diện nông không tái hiện đầy đủ RF; phải báo cáo Fidelity. Luật mô tả tương quan, không phải quan hệ nhân quả.
 - **Ngưỡng sinh thái từ văn liệu** là số làm tròn theo các đai của Peet (1981) và Marr (1961) (đã xác minh), có sự chồng lấn tự nhiên; ngưỡng quyết định phân lớp cuối cùng lấy từ dữ liệu thực tế.
-- **Chi phí tính toán**: trên Colab **[CẦN ĐO]**. **[SỐ ĐO]** trên máy cục bộ 24 lõi CPU / 16 GB RAM: toàn bộ notebook ≈ 55 phút ở bản trước; bản hiện tại thêm mục 11.1–11.2 (≈ 35 phút trên máy này), thời gian chạy đầy đủ **[CẦN ĐO]**; Colab miễn phí có ít lõi hơn nên dự kiến lâu hơn đáng kể.
+- **Chi phí tính toán**: trên Colab **[CẦN ĐO]**. **[SỐ ĐO]** trên máy cục bộ 24 lõi CPU / 16 GB RAM: toàn bộ notebook ≈ 30 phút (1.776 s) ở bản hiện tại (đã bỏ E6, thêm mục 8.2); Colab miễn phí có ít lõi hơn nên dự kiến lâu hơn đáng kể.

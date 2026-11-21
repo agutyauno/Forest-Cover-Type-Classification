@@ -1,6 +1,6 @@
 # NHẬT KÝ CHỈNH SỬA SAU RÀ SOÁT
 
-Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo; đợt 3 (mục 1c) tái cấu trúc notebook; đợt 4 (mục 1d) chạy lại từng bước và bỏ cột `Wilderness_Area`. Số liệu ghi trong mục 1b thuộc bản notebook trước đợt 3; số liệu ở mục 1c thuộc bản trước đợt 4. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
+Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đợt 1 (mục 1) sửa nội dung thiết kế; đợt 2 (mục 1b) bổ sung số đo thực nghiệm và cấu trúc repo; đợt 3 (mục 1c) tái cấu trúc notebook; đợt 4 (mục 1d) chạy lại từng bước và bỏ cột `Wilderness_Area`; đợt 5 (mục 1e) loại thí nghiệm E6 khỏi phạm vi; đợt 6 (mục 1f) rà soát thiết kế, diễn giải và chạy lại toàn bộ notebook. Số liệu ghi trong mục 1b thuộc bản notebook trước đợt 3; số liệu ở mục 1c thuộc bản trước đợt 4. Nhật ký này ghi lại những gì đã sửa và những gì còn phải làm.
 
 ## 1. Đã sửa
 
@@ -53,11 +53,36 @@ Bộ tài liệu ban đầu là **thiết kế trước khi thực hiện**. Đ�
 | 30 | Bỏ các tham số quyết định thủ công: mục 8.1 (`PRIORITY`, ưu tiên Precision/Recall lớp hiếm) và `N_TREES_OVERRIDE` ở Bước 9; cấu hình và số cây hoàn toàn theo quy tắc `choose_simplest` | Ở cả hai lần chạy, chênh lệch Precision lớp hiếm giữa các ứng viên chỉ 0,0001, nhỏ hơn nhiều so với dao động giữa các seed | notebook Bước 8–9 |
 | 31 | Bước 12 viết lại theo số đo mới. D_final đã được dùng 3 lần (commit `3603bec`, lần chạy từng bước trước khi bỏ WA, lần này); mọi lựa chọn dựa trên D_val hoặc LOWO | Minh bạch việc dùng lại tập đánh giá cuối | notebook Bước 12 |
 
+## 1e. Đợt 5 — Loại thí nghiệm E6 (leave-one-wilderness-out)
+
+| # | Thay đổi | Lý do | File |
+| :-: | :--- | :--- | :--- |
+| 32 | Xoá Bước 11 cũ (E6, mục 11.1(b) LOWO, mục 11.2 chẩn đoán); Bước 12 đổi thành Bước 11. Xoá `results/tables/e6_lowo.csv`, `e6_location_ablation_lowo.csv`, `results/figures/e6_lowo.png` (vẫn còn trong lịch sử git) | Phạm vi đánh giá là dự đoán bên trong 4 vùng nghiên cứu. 4 vùng khác nhau mạnh về đai cao độ và cơ cấu lớp, nên LOWO đo khả năng ngoại suy sang hệ sinh thái khác, không tách được tự tương quan không gian khỏi khác biệt giữa vùng; LOWO lại vừa dùng để chọn cấu hình (bỏ WA) vừa dùng để báo cáo | notebook, `results/` |
+| 33 | Mục 11.1(a) (ablation 2×2 trên D_val) chuyển thành mục 8.1, giữ nguyên code và output; bảng đổi tên thành `results/tables/e5_location_ablation_val.csv` | Là số đo kiểm chứng duy nhất cho quyết định bỏ WA ở quy mô đầy đủ | notebook Bước 8 |
+| 34 | Lý do bỏ 4 cột `Wilderness_Area` đổi từ kết quả LOWO sang: không khác biệt trên D_val (0,9527 ± 0,0008 so với 0,9526 ± 0,0008) và tính diễn giải của luật. Ghi nhận hạn chế: trên S15 với tham số mặc định, bỏ WA giảm 0,0027. Giữ 6 tổ hợp khoảng cách (bỏ chúng giảm 0,011 trên D_val); không còn "đánh đổi để ngỏ" | Bỏ E6 nên tiêu chí LOWO không còn được dùng | notebook đầu Bước 6, Bước 11; `README.md`, `docs/`, `models/README.md` |
+
+Số liệu LOWO của đợt 4 (Macro-F1 trên vùng chưa thấy: mô hình cuối 0,374; giữ WA 0,277; baseline E0 0,323) chỉ còn trong lịch sử git (commit `df3ce7f`) và không được dùng cho kết luận.
+
+## 1f. Đợt 6 — Rà soát thiết kế và diễn giải, chạy lại toàn bộ notebook
+
+| # | Thay đổi | Lý do | File |
+| :-: | :--- | :--- | :--- |
+| 35 | Thêm mục 8.2: kiểm tra lại lựa chọn của E2/E3 dưới siêu tham số cuối (giữ `Aspect` + `Hillshade` gốc; giữ `Hillshade_Noon`; `Soil_Type_Code`), 3 seed trên D_val. Quy ước đặt trước: chỉ báo cáo, `FEATURE_SPEC` không đổi. Kết quả: lựa chọn của E2 giữ nguyên; quy tắc 1 SD sẽ chọn `Soil_Type_Code` (0,9521 ± 0,0008 so với One-Hot 0,9526 ± 0,0008), ghi vào phần Hạn chế. Bảng: `results/tables/e5_feature_robustness_val.csv` | E2/E3 chọn trên S15 với `balanced` và `max_features='sqrt'`, khác với siêu tham số cuối | notebook Bước 8, Bước 11 |
+| 36 | Mục 10.2: đổi nhãn "Gini importance" thành MDI (`criterion='entropy'`), cột `gini` → `mdi` trong `feature_importance.csv`; thêm permutation theo nhóm (cao độ; khoảng cách ngang + 6 tổ hợp; 40 cột đất), bảng `feature_importance_groups.csv` | Mô hình dùng entropy, không phải Gini; `Elevation` và `Elevation_Water` có r ≈ 0,98 nên permutation từng cột không phản ánh vai trò của nhóm | notebook Bước 10 |
+| 37 | Mục 3.3: quy ước dấu của `Vertical_Distance_To_Hydrology` ghi là giả định (`covtype.info` không nêu), không còn ghi "xác minh" | Biểu đồ chỉ minh hoạ hệ quả của giả định | notebook Bước 3; `KE_HOACH_THI_NGHIEM.md`, `KY_THUAT…` |
+| 38 | Bước 11: bổ sung Precision lớp 5 ở E1 (0,902 → 0,735 khi dùng `balanced`); sửa thời gian/RAM theo output (96 s, 1,54 GB); thêm hạn chế về KTC bootstrap theo dòng, về SD khi S15 cố định và việc dùng D_val cho nhiều lựa chọn; D_final đã dùng 4 lần (lần chạy lại này cho số đo trùng khớp `df3ce7f`) | Đối chiếu tổng kết với output và minh bạch giới hạn | notebook Bước 11 |
+| 39 | Bước 9: in cảnh báo khi mức sàn 100 cây vượt ngân sách bộ nhớ | Trước đây `max(100, …)` có thể vượt ngân sách mà không báo | notebook Bước 9 |
+| 40 | Bỏ khỏi notebook các số đo của phiên bản trước mà lần chạy hiện tại không tái tạo được (xem dưới) | Notebook chỉ giữ số đo do chính nó sinh ra | notebook Bước 11 |
+
+Số đo của phiên bản còn cột WA (commit `3603bec` và lần chạy từng bước trước đợt 4), chuyển từ Bước 11 sang đây: phương án E2 được chọn đạt 0,8966 trên S15 (so với 0,8927 khi bỏ WA); E4 ở 100% D_pool đạt 0,9439 ± 0,0005 (so với 0,9429 khi bỏ WA); Permutation importance của `Elevation` là 0,296 (so với 0,385 khi bỏ WA).
+
+Toàn bộ notebook được chạy lại trên kernel mới (Python 3.13.5, scikit-learn 1.9.1, 24 lõi CPU): 1.776 s ≈ 30 phút. Các số đo của E0–E5 và D_final trùng khớp commit `df3ce7f`.
+
 ## 2. Cần người thực hiện xử lý (tiếp theo)
 
 1. ~~Đối chiếu bộ `docs/` với `detai.md`~~ — `detai.md` đã có trong `docs/`. Yêu cầu "thực hiện trên Google Colab" **chưa được kiểm tra**: notebook mới chạy trên máy cục bộ.
 2. Các mục **[KỲ VỌNG]/[CẦN ĐO]** liên quan tới Bước 1–5B đã có số đo kèm theo. Còn lại: thời gian/RAM trên Colab; mọi số liệu của Bước 6–8 (Fidelity, luật, hàm tương tác). Hàm trích luật mới chỉ chạy trên dữ liệu giả lập, chưa chạy trên Covertype.
-3. ~~Kiểm chứng việc loại đặc trưng gắn vị trí dưới giao thức E6~~ — đã làm ở đợt 4 (mục 1d, #28–29): bỏ `Wilderness_Area` đã áp dụng. Còn để ngỏ: bỏ 6 tổ hợp khoảng cách là một đánh đổi (−0,011 Macro-F1 khi chia ngẫu nhiên, +0,018 ở vùng chưa thấy); `Fire_Road_Sum` vẫn đứng thứ 3 về Permutation importance nên có thể xuất hiện trong luật của cây đại diện.
-4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu với số đo: (a) giả thuyết pha loãng One-Hot **không** được ủng hộ (E3: One-Hot cao hơn các phương án gộp); (b) `class_weight='balanced'` tốt nhất trên S15 (E1) nhưng `None` tốt hơn ở quy mô đầy đủ (E5); (c) `class_weight` và `min_samples_leaf` chủ yếu đổi Precision lấy Recall của các lớp hiếm (ví dụ `balanced, min_samples_leaf=4`: Recall lớp 4 0,929 so với 0,884, Macro-F1 −0,024; 1 seed, xem `results/tables/e5_tuning.csv`); (d) `max_depth=20` dự đoán thừa lớp 5 (Recall 0,970, Precision 0,628).
+3. ~~Kiểm chứng việc loại đặc trưng gắn vị trí dưới giao thức E6~~ — E6 đã được loại ở đợt 5 (#32–34). Còn lưu ý: `Fire_Road_Sum` đứng thứ 3 về Permutation importance nên có thể xuất hiện trong luật của cây đại diện; cần biện luận ý nghĩa sinh thái nếu xảy ra.
+4. Các phần lý thuyết (`CHIEN_LUOC…`, `KY_THUAT…`) vẫn trình bày lập luận thiết kế gốc. Khi viết báo cáo cuối, cần đối chiếu với số đo: (a) giả thuyết pha loãng One-Hot **không** được ủng hộ (E3: One-Hot cao hơn các phương án gộp; dưới siêu tham số cuối, One-Hot và `Soil_Type_Code` gần như ngang nhau, chênh 0,0006, notebook mục 8.2); (b) `class_weight='balanced'` tốt nhất trên S15 (E1) nhưng `None` tốt hơn ở quy mô đầy đủ (E5); (c) `class_weight` và `min_samples_leaf` chủ yếu đổi Precision lấy Recall của các lớp hiếm (ví dụ `balanced, min_samples_leaf=4`: Recall lớp 4 0,929 so với 0,884, Macro-F1 −0,024; 1 seed, xem `results/tables/e5_tuning.csv`); (d) `max_depth=20` dự đoán thừa lớp 5 (Recall 0,970, Precision 0,628).
 5. ~~Phương án "tổ hợp khoảng cách + bỏ `Aspect_Trig`/`Delta_Hillshade`"~~ — đã thử ở đợt 4 (#27).
 6. Số cây (200) do quy tắc chọn dựa trên chênh lệch cỡ nhiễu so với 150 cây (đường cong 1 seed); nếu kích thước file hoặc tốc độ truy vấn ở E7 là vấn đề, có thể cân nhắc lại.
