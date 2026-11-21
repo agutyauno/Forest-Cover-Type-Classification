@@ -26,3 +26,6 @@ desktop.ini
 
 # --- Thiết lập cục bộ của Claude Code ---
 .claude/settings.local.json
+
+# --- Báo cáo môn học (không đưa lên git) ---
+baocao/

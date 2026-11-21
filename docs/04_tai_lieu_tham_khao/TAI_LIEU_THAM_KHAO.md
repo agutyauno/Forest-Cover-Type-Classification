@@ -47,7 +47,7 @@ Tài liệu này tổng hợp toàn bộ các nguồn dẫn chứng khoa học, 
   - *Tiêu đề*: *"Comparative accuracies of artificial neural networks and discriminant analysis in predicting forest cover types from cartographic variables"*.
   - *Tạp chí*: *Computers and Electronics in Agriculture*, Tập 24, Số 3, tr. 131–151.
   - *DOI*: `10.1016/S0168-1699(99)00046-0`.
-  - *Kết quả công bố*: Mô hình phân tích biệt số tuyến tính (Linear Discriminant Analysis) đạt độ chính xác 58.38%; Mô hình mạng nơ-ron truyền thẳng (Feedforward MLP ANN) đạt độ chính xác 70.58% (khoảng tin cậy 95%: 70.26%–70.80% qua 30 lần lặp).
+  - *Kết quả công bố*: Mô hình phân tích biệt số tuyến tính (Linear Discriminant Analysis) đạt độ chính xác 58.38%; Mô hình mạng nơ-ron truyền thẳng (Feedforward MLP ANN) cuối cùng đạt độ chính xác 70.58%; 30 mạng khởi tạo trọng số ngẫu nhiên có độ chính xác trung bình 70.52% (khoảng tin cậy 95%: 70.26%–70.80%).
 
 ---
 
